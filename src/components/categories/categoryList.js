@@ -3,17 +3,19 @@ import { connect } from "react-redux";
 import { ListGroup, ListGroupItem } from "reactstrap";
 import { bindActionCreators } from "redux";
 import * as categoryActions from "../../redux/actions/categoryActions";
+import * as productActions from "../../redux/actions/productActions";
 class categoryList extends Component {
   componentDidMount() {
     this.props.actions.getCategories();
   }
   selectCategory=(category)=>{
-    this.props.actions.changeCategory(category)
+    this.props.actions.changeCategory(category);
+    this.props.actions.getProducts(category.id);
   }
   render() {
     return (
       <div>
-        <h3>Categories</h3>
+        <h3><Badge color="warning">Categories</Badge></h3>
         <ListGroup>
           {this.props.categories.map((category) => (
             <ListGroupItem
@@ -25,7 +27,6 @@ class categoryList extends Component {
             </ListGroupItem>
           ))}
         </ListGroup>
-        <h5>Sleceted Category: {this.props.currentCategory.categoryName}</h5>
       </div>
     );
   }
@@ -34,6 +35,7 @@ function mapStateToProps(state) {
   return {
     currentCategory: state.changeCategoryReducer,
     categories: state.categoryListReducer,
+    products: state.productListReducer
   };
 }
 function mapDispatchToProps(dispatch) {
@@ -47,7 +49,8 @@ function mapDispatchToProps(dispatch) {
         categoryActions.changeCategory,
         dispatch
       ),
-    },
+      getProducts: bindActionCreators(productActions.getProducts, dispatch),
+    }
   };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(categoryList);
